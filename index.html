@@ -661,7 +661,7 @@
 
         let currentFile = null;
         let processedImageUrl = null;
-        let apiBaseUrl = "http://localhost:8000";
+        let apiBaseUrl = "https://luffy1412-bg-remover.hf.space";
 
         removeBgBtn.disabled = true;
 
@@ -710,41 +710,47 @@
 
         // Handle remove background button click
         removeBgBtn.addEventListener("click", async () => {
-          if (!currentFile) return;
+  if (!currentFile) return;
 
-          // Show loading view
-          uploadView.style.display = "none";
-          coffeeView.style.display = "none";
-          loadingView.style.display = "flex";
-          glassContainer.classList.add("result-view");
+  // Show loading view
+  uploadView.style.display = "none";
+  coffeeView.style.display = "none";
+  loadingView.style.display = "flex";
+  glassContainer.classList.add("result-view");
 
-          try {
-            // Prepare form data
-            const formData = new FormData();
-            formData.append("file", currentFile);
+  try {
+    const formData = new FormData();
+    formData.append("file", currentFile);
 
-            fetch("http://localhost:8000/remove-bg/?return_format=png", {
-              method: "POST",
-              body: formData,
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                if (data.image) {
-                  processedImageUrl = `data:image/png;base64,${data.image}`;
-                  loadingView.style.display = "none";
-                  resultView.style.display = "flex";
-                  resultImage.src = processedImageUrl;
-                  downloadBtn.style.display = "inline-block";
-                }
-              })
-              .catch((err) => {
-                alert("Failed to remove background: " + err.message);
-              });
-          } catch (error) {
-            alert(`Failed to remove background: ${error.message}`);
-            resetToUploadView();
-          }
-        });
+    // 🔥 Start fetching
+    const res = await fetch("https://luffy1412-bg-remover.hf.space/remove-bg/?return_format=png", {
+      method: "POST",
+      body: formData,
+    });
+
+    // ⏩ Show image as blob immediately (fast streaming preview)
+    const clone = res.clone(); // clone response so we can parse twice
+    const blob = await clone.blob();
+    processedImageUrl = URL.createObjectURL(blob);
+
+    // Show preview instantly
+    loadingView.style.display = "none";
+    resultView.style.display = "flex";
+    resultImage.src = processedImageUrl;
+    downloadBtn.style.display = "inline-block";
+
+    // ✅ Now parse JSON (your original logic)
+    const data = await res.json();
+    if (data.image) {
+      processedImageUrl = `data:image/png;base64,${data.image}`;
+      resultImage.src = processedImageUrl; // replace preview with final base64
+    }
+  } catch (error) {
+    alert("Failed to remove background: " + error.message);
+    resetToUploadView();
+  }
+});
+
 
         // Handle download button click
         downloadBtn.addEventListener("click", () => {
@@ -763,7 +769,7 @@
 
           const a = document.createElement("a");
           a.href = url;
-          a.download = "background_removed.png";
+          a.download = `${currentFile.name.replace(/\.[^/.]+$/, "")}_BGRemoved.png`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
