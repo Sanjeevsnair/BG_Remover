@@ -2,7 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
     <title>REMOVEBG</title>
     <style>
       * {
@@ -10,12 +14,16 @@
         padding: 0;
         box-sizing: border-box;
       }
-      
 
       body {
         font-family: "Arial", sans-serif;
         overflow: hidden;
-        background: #0a0f1c;
+        background: linear-gradient(
+          to bottom,
+          #0b0d14 0%,
+          #0a1530 60%,
+          #063070 100%
+        );
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -84,7 +92,6 @@
         opacity: 0;
         transform: translateY(20px);
         animation: fadeInUp 2.5s cubic-bezier(0.2, 0, 0.175, 1) forwards;
-
       }
 
       .image-container {
@@ -92,14 +99,42 @@
         position: absolute;
         bottom: -600px;
         opacity: 0;
-        animation: slideUp 2s ease-in-out 0.5s forwards,
+        animation: slideUp 2s ease-in-out 0.1s forwards,
           imageFinalMove 1.7s ease-in-out 2.45s forwards;
         z-index: 5;
       }
 
       .image-container img {
-        width: auto;
-        height: auto;
+        -webkit-mask-image: linear-gradient(
+            to right,
+            transparent,
+            black 20%,
+            black 80%,
+            transparent
+          ),
+          linear-gradient(
+            to bottom,
+            transparent,
+            black 20%,
+            black 80%,
+            transparent
+          );
+        -webkit-mask-composite: multiply;
+        mask-image: linear-gradient(
+            to right,
+            transparent,
+            black 20%,
+            black 80%,
+            transparent
+          ),
+          linear-gradient(
+            to bottom,
+            transparent,
+            black 20%,
+            black 80%,
+            transparent
+          );
+        mask-composite: intersect;
       }
 
       /* Liquid Glass Card Styles */
@@ -112,12 +147,12 @@
 
       .glass-card-container {
         position: absolute;
-        bottom: -400px;
+        bottom: -700px;
         left: 50%;
         transform: translateX(-50%) scale(2);
         z-index: 5;
         opacity: 0;
-        animation: glassRise 2s ease-in-out 0.8s forwards,
+        animation: glassRise 2s ease-in-out 0.9s forwards,
           glassScale 1.3s ease-in-out 2.8s forwards;
       }
 
@@ -486,7 +521,7 @@
         }
         100% {
           opacity: 1;
-          transform: translateX(-650px) translateY(-260px) scale(0.4)
+          transform: translateX(-650px) translateY(-260px) scale(0.4);
         }
       }
 
@@ -503,8 +538,8 @@
 
       @keyframes glassRise {
         0% {
-          bottom: -400px;
-          opacity: 0;
+          bottom: -700px;
+          opacity: 0.5;
           transform: translateX(-50%) scale(1.5);
         }
         70% {
@@ -534,14 +569,216 @@
           transform: translateY(-420px);
         }
       }
+
+      /* Mobile Responsive Styles */
+      @media screen and (max-width: 768px) {
+        body {
+          overflow: hidden;
+          height: auto;
+          min-height: 130vh;
+          width: 100%;
+          /* Set the height to 100% of the viewport height */
+          padding: 1rem;
+          box-sizing: border-box;
+        }
+
+        .nav-bar {
+          padding: 1px;
+          top: 10px;
+          right: 10px;
+        }
+
+        .coffee-btn {
+          padding: 0.6rem 1.5rem;
+          font-size: 0.7rem;
+          margin-top: 0;
+        }
+
+        .title {
+          font-size: 3rem;
+        }
+
+        .title-container {
+          width: fit-content;
+          margin: 0 auto; /* horizontal center */
+          text-align: center;
+          padding: 0 10px; /* breathing space on mobile */
+        }
+
+        .image-container {
+          width: max-content;
+          position: absolute;
+          bottom: -600px;
+          opacity: 0;
+          animation: slideUp 2s ease-in-out 0.5s forwards,
+            imageFinalMove 1.7s ease-in-out 2.45s forwards;
+          z-index: 5;
+        }
+
+        .glass-card-container {
+          position: absolute;
+          bottom: -400px;
+          left: 50%;
+          transform: translateX(-50%) scale(2);
+          z-index: 5;
+          opacity: 0;
+          animation: glassRise 2s ease-in-out 0.8s forwards,
+            glassScale 1.3s ease-in-out 2.8s forwards;
+        }
+
+        .glass-container {
+          min-width: 95vw;
+          max-width: 95vw;
+          min-height: 16rem;
+          margin: 0 auto;
+        }
+
+        .glass-container.expanded {
+          min-height: 20rem;
+        }
+
+        .glass-container.result-view {
+          min-height: 22rem;
+        }
+
+        .glass-content {
+          padding: 1.5rem;
+          gap: 15px;
+        }
+
+        .upload-title {
+          font-size: 1.5rem;
+        }
+
+        .upload-subtitle {
+          font-size: 0.9rem;
+          margin-bottom: 1rem;
+        }
+
+        .upload-area {
+          height: 150px;
+          max-width: 100%;
+        }
+
+        .upload-area .upload-text {
+          font-size: 0.85rem;
+          padding: 0 0.5rem;
+        }
+
+        .remove-bg-btn {
+          font-size: 0.9rem;
+          padding: 0.7rem 1.5rem;
+          margin-top: 1rem;
+        }
+
+        .action-btn {
+          font-size: 0.9rem;
+          padding: 0.7rem 1.5rem;
+          min-width: 120px;
+          margin: 0.3rem;
+        }
+
+        .btn-container {
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .qr-title {
+          font-size: 1.5rem;
+        }
+
+        .qr-subtitle {
+          font-size: 0.9rem;
+          max-width: 300px;
+        }
+
+        .qr-code {
+          width: 150px;
+          height: 150px;
+        }
+
+        .qr-code img {
+          width: 150px;
+          height: 130px;
+        }
+
+        .result-title {
+          font-size: 1.3rem;
+          margin-bottom: 1rem;
+        }
+
+        .result-image {
+          max-height: 200px;
+        }
+
+        /* Mobile-specific animations */
+        @keyframes fadeInUp {
+          0% {
+            opacity: 0;
+            transform: translateY(-100px) scale(0.96);
+          }
+          60% {
+            opacity: 1;
+            transform: translateY(-100px) scale(1);
+          }
+          100% {
+            opacity: 1;
+            transform: translateX(-135px) translateY(-440px) scale(0.5);
+          }
+        }
+
+        @keyframes slideUp {
+          0% {
+            transform: translateY(0);
+            opacity: 0;
+          }
+          100% {
+            transform: translateY(-600px);
+            opacity: 1;
+          }
+        }
+
+        @keyframes glassRise {
+          0% {
+            bottom: -1200px;
+            opacity: 0;
+            transform: translateX(-50%) scale(1.5);
+          }
+          70% {
+            opacity: 0.8;
+          }
+          100% {
+            bottom: 50%;
+            opacity: 1;
+            transform: translateX(-50%) translateY(20%) scale(1.5);
+          }
+        }
+
+        @keyframes glassScale {
+          0% {
+            transform: translateX(-50%) translateY(20%) scale(1.5);
+          }
+          100% {
+            transform: translateX(-50%) translateY(20%) scale(1);
+          }
+        }
+
+        @keyframes imageFinalMove {
+          0% {
+            transform: translateY(-600px);
+          }
+          100% {
+            transform: translateY(-720px);
+          }
+        }
+      }
     </style>
   </head>
   <body>
     <!-- Navigation Bar with Coffee Button -->
     <div class="nav-bar">
-      <button class="coffee-btn" id="coffeeBtn">
-        ☕ Buy Me a Coffee
-      </button>
+      <button class="coffee-btn" id="coffeeBtn">☕ Buy Me a Coffee</button>
     </div>
 
     <div class="title-container">
@@ -562,7 +799,7 @@
           <div class="glass-filter"></div>
           <div class="glass-overlay"></div>
           <div class="glass-specular"></div>
-          
+
           <!-- Upload View -->
           <div class="glass-content glass-content--inline" id="uploadView">
             <h2 class="upload-title">Upload Image</h2>
@@ -589,13 +826,13 @@
           </div>
 
           <!-- Coffee View -->
-          <div class="glass-content" id="coffeeView" style="display: none;">
+          <div class="glass-content" id="coffeeView" style="display: none">
             <div class="qr-container">
               <h2 class="qr-title">Support Me ❤️</h2>
               <p class="qr-subtitle">Scan this QR code to buy me a coffee ☕</p>
               <div class="qr-code">
                 <!-- Replace with your actual Google Pay QR code image -->
-                <img src="IMG_20250823_212016.png" alt="Google Pay QR Code">
+                <img src="IMG_20250823_212016.png" alt="Google Pay QR Code" />
               </div>
               <button class="back-btn" id="backBtn">Back to Upload</button>
             </div>
@@ -710,47 +947,49 @@
 
         // Handle remove background button click
         removeBgBtn.addEventListener("click", async () => {
-  if (!currentFile) return;
+          if (!currentFile) return;
 
-  // Show loading view
-  uploadView.style.display = "none";
-  coffeeView.style.display = "none";
-  loadingView.style.display = "flex";
-  glassContainer.classList.add("result-view");
+          // Show loading view
+          uploadView.style.display = "none";
+          coffeeView.style.display = "none";
+          loadingView.style.display = "flex";
+          glassContainer.classList.add("result-view");
 
-  try {
-    const formData = new FormData();
-    formData.append("file", currentFile);
+          try {
+            const formData = new FormData();
+            formData.append("file", currentFile);
 
-    // 🔥 Start fetching
-    const res = await fetch("https://luffy1412-bg-remover.hf.space/remove-bg/?return_format=png", {
-      method: "POST",
-      body: formData,
-    });
+            // 🔥 Start fetching
+            const res = await fetch(
+              "https://luffy1412-bg-remover.hf.space/remove-bg/?return_format=png",
+              {
+                method: "POST",
+                body: formData,
+              }
+            );
 
-    // ⏩ Show image as blob immediately (fast streaming preview)
-    const clone = res.clone(); // clone response so we can parse twice
-    const blob = await clone.blob();
-    processedImageUrl = URL.createObjectURL(blob);
+            // ⏩ Show image as blob immediately (fast streaming preview)
+            const clone = res.clone(); // clone response so we can parse twice
+            const blob = await clone.blob();
+            processedImageUrl = URL.createObjectURL(blob);
 
-    // Show preview instantly
-    loadingView.style.display = "none";
-    resultView.style.display = "flex";
-    resultImage.src = processedImageUrl;
-    downloadBtn.style.display = "inline-block";
+            // Show preview instantly
+            loadingView.style.display = "none";
+            resultView.style.display = "flex";
+            resultImage.src = processedImageUrl;
+            downloadBtn.style.display = "inline-block";
 
-    // ✅ Now parse JSON (your original logic)
-    const data = await res.json();
-    if (data.image) {
-      processedImageUrl = `data:image/png;base64,${data.image}`;
-      resultImage.src = processedImageUrl; // replace preview with final base64
-    }
-  } catch (error) {
-    alert("Failed to remove background: " + error.message);
-    resetToUploadView();
-  }
-});
-
+            // ✅ Now parse JSON (your original logic)
+            const data = await res.json();
+            if (data.image) {
+              processedImageUrl = `data:image/png;base64,${data.image}`;
+              resultImage.src = processedImageUrl; // replace preview with final base64
+            }
+          } catch (error) {
+            alert("Failed to remove background: " + error.message);
+            resetToUploadView();
+          }
+        });
 
         // Handle download button click
         downloadBtn.addEventListener("click", () => {
@@ -769,7 +1008,10 @@
 
           const a = document.createElement("a");
           a.href = url;
-          a.download = `${currentFile.name.replace(/\.[^/.]+$/, "")}_BGRemoved.png`;
+          a.download = `${currentFile.name.replace(
+            /\.[^/.]+$/,
+            ""
+          )}_BGRemoved.png`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -782,7 +1024,7 @@
 
         function handleFileUpload(file) {
           // Check file size (limit to 10MB)
-          if (file.size > 10 * 1024 * 1024) {
+          if (file.size > 100 * 1024 * 1024) {
             alert(
               "File size too large. Please upload an image smaller than 10MB."
             );
