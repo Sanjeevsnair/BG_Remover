@@ -25,7 +25,11 @@ REPO_ID = "luffy1412/BG_Remove"   # replace with your repo name
 MODEL_FILENAME = "model_fp16.onnx"
 
 # Download and cache model automatically
-MODEL_PATH = hf_hub_download(repo_id=REPO_ID, filename=MODEL_FILENAME)
+MODEL_PATH = hf_hub_download(
+    repo_id=REPO_ID,
+    filename=MODEL_FILENAME,
+    token=os.getenv("HF_TOKEN")  # use env variable
+)
 
 # Initialize ONNX model
 try:
