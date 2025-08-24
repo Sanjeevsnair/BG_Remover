@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>REMOVEBG</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+
+      body {
+        font-family: "Arial", sans-serif;
+        overflow: hidden;
+        background: #0a0f1c;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        position: relative;
+      }
+
+      /* Navigation Bar */
+      .nav-bar {
+        position: fixed;
+        top: 0;
+        right: 0;
+        padding: 20px;
+        z-index: 100;
+      }
+
+      .coffee-btn {
+        margin-top: 0.2rem;
+        padding: 0.8rem 2rem;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.2),
+          rgba(255, 255, 255, 0.1)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 2rem;
+        color: white;
+        font-weight: bold;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 1;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        animation: coffee 2.5s ease-in-out 0s forwards;
+      }
+
+      .coffee-btn:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.3),
+          rgba(255, 255, 255, 0.2)
+        );
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .coffee-btn:active {
+        transform: translateY(0);
+      }
+
+      .title-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 2;
+        transform: translateY(-50px);
+        animation: textFinalMove 1.5s ease-in-out 2s forwards;
+      }
+
+      .title {
+        color: white;
+        font-size: 5rem;
+        font-weight: bold;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 2.5s cubic-bezier(0.2, 0, 0.175, 1) forwards;
+
+      }
+
+      .image-container {
+        width: max-content;
+        position: absolute;
+        bottom: -600px;
+        opacity: 0;
+        animation: slideUp 2s ease-in-out 0.5s forwards,
+          imageFinalMove 1.7s ease-in-out 2.45s forwards;
+        z-index: 5;
+      }
+
+      .image-container img {
+        width: auto;
+        height: auto;
+      }
+
+      /* Liquid Glass Card Styles */
+      :root {
+        --lg-bg-color: rgba(255, 255, 255, 0.15);
+        --lg-highlight: rgba(255, 255, 255, 0.45);
+        --lg-text: #ffffff;
+        --lg-hover-glow: rgba(255, 255, 255, 0.2);
+      }
+
+      .glass-card-container {
+        position: absolute;
+        bottom: -400px;
+        left: 50%;
+        transform: translateX(-50%) scale(2);
+        z-index: 5;
+        opacity: 0;
+        animation: glassRise 2s ease-in-out 0.8s forwards,
+          glassScale 1.3s ease-in-out 2.8s forwards;
+      }
+
+      .glass-container {
+        position: relative;
+        display: flex;
+        z-index: 10;
+        font-weight: 600;
+        color: var(--lg-text);
+        cursor: pointer;
+        background: transparent;
+        border-radius: 2rem;
+        overflow: hidden;
+        box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
+        min-width: 41rem;
+        min-height: 19rem;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+      }
+
+      .glass-container.expanded {
+        min-height: 23rem;
+      }
+
+      .glass-container.result-view {
+        min-height: 23rem;
+      }
+
+      .glass-filter {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        backdrop-filter: blur(8px);
+        filter: url(#lg-dist);
+        isolation: isolate;
+      }
+
+      .glass-specular {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        border-radius: inherit;
+        overflow: hidden;
+        box-shadow: inset 1px 1px 0 var(--lg-highlight),
+          inset 0 0 5px var(--lg-highlight);
+      }
+
+      .glass-content {
+        position: relative;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        padding: 2rem;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .upload-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+
+      .upload-subtitle {
+        font-size: 1rem;
+        opacity: 0.8;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      .upload-area {
+        width: 100%;
+        max-width: 500px;
+        height: 180px;
+        border: 2px dashed rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        background-color: #12182657;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #e3e3e3;
+        font-size: 0.95rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .upload-area:hover {
+        border-color: #3ea6ff;
+        background-color: #12182675;
+      }
+
+      .upload-area .upload-icon {
+        font-size: 2rem;
+        color: #3ea6ff;
+        margin-bottom: 8px;
+      }
+
+      .upload-area .upload-text {
+        font-size: 0.95rem;
+      }
+
+      .upload-area .upload-text span {
+        color: #3ea6ff;
+        cursor: pointer;
+        text-decoration: underline;
+      }
+
+      .upload-input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+      }
+
+      .qr-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        width: 100%;
+      }
+
+      .qr-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: white;
+        text-align: center;
+      }
+
+      .qr-subtitle {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-align: center;
+        max-width: 400px;
+        margin-bottom: 10px;
+      }
+
+      .qr-code {
+        width: 200px;
+        height: 200px;
+        background-color: white;
+        padding: 15px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .qr-code img {
+        width: 200px;
+        height: 180px;
+      }
+
+      .back-btn {
+        margin-top: 1rem;
+        padding: 0.8rem 2rem;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.2),
+          rgba(255, 255, 255, 0.1)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 2rem;
+        color: white;
+        font-weight: bold;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 1;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .back-btn:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.3),
+          rgba(255, 255, 255, 0.2)
+        );
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .remove-bg-btn {
+        margin-top: 1.5rem;
+        padding: 0.8rem 2rem;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.2),
+          rgba(255, 255, 255, 0.1)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 2rem;
+        color: white;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 1;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .remove-bg-btn:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.3),
+          rgba(255, 255, 255, 0.2)
+        );
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .remove-bg-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        color: #8a8a8a;
+      }
+
+      .action-btn {
+        margin: 0.5rem;
+        padding: 0.8rem 2rem;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.2),
+          rgba(255, 255, 255, 0.1)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 2rem;
+        color: white;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        min-width: 150px;
+        text-align: center;
+      }
+
+      .action-btn:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.3),
+          rgba(255, 255, 255, 0.2)
+        );
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .action-btn:active {
+        transform: translateY(0);
+      }
+
+      .btn-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+        width: 100%;
+      }
+
+      .image-preview-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .image-preview {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0.5rem;
+        object-fit: contain;
+      }
+
+      .result-image {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 0.5rem;
+        object-fit: contain;
+      }
+
+      .filename {
+        position: absolute;
+        bottom: 10px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 0.8rem;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 0.2rem 0;
+        border-radius: 0 0 0.5rem 0.5rem;
+      }
+
+      .loading-container {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+      }
+
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+        margin-bottom: 1rem;
+      }
+
+      .loading-text {
+        color: white;
+        font-size: 1rem;
+      }
+
+      .result-container {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+      }
+
+      .result-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes coffee {
+        0% {
+          transform: translateY(-300px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+
+      @keyframes fadeInUp {
+        0% {
+          opacity: 0;
+          transform: translateY(20px) scale(0.96);
+        }
+        60% {
+          opacity: 1;
+          transform: translateY(20px) scale(1);
+        }
+        100% {
+          opacity: 1;
+          transform: translateX(-650px) translateY(-260px) scale(0.4)
+        }
+      }
+
+      @keyframes slideUp {
+        0% {
+          transform: translateY(0);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(-300px);
+          opacity: 1;
+        }
+      }
+
+      @keyframes glassRise {
+        0% {
+          bottom: -400px;
+          opacity: 0;
+          transform: translateX(-50%) scale(1.5);
+        }
+        70% {
+          opacity: 0.8;
+        }
+        100% {
+          bottom: 50%;
+          opacity: 1;
+          transform: translateX(-50%) translateY(60%) scale(1.5);
+        }
+      }
+
+      @keyframes glassScale {
+        0% {
+          transform: translateX(-50%) translateY(60%) scale(1.5);
+        }
+        100% {
+          transform: translateX(-50%) translateY(60%) scale(1);
+        }
+      }
+
+      @keyframes imageFinalMove {
+        0% {
+          transform: translateY(-300px);
+        }
+        100% {
+          transform: translateY(-420px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Bar with Coffee Button -->
+    <div class="nav-bar">
+      <button class="coffee-btn" id="coffeeBtn">
+        ☕ Buy Me a Coffee
+      </button>
+    </div>
+
+    <div class="title-container">
+      <h1 class="title">RemovBg</h1>
+    </div>
+
+    <div class="image-container">
+      <img src="star.png" alt="Example image" />
+    </div>
+
+    <!-- Liquid Glass Card -->
+    <div class="glass-card-container">
+      <div class="container container--inline">
+        <div
+          class="glass-container glass-container--rounded glass-container--large"
+          id="glassContainer"
+        >
+          <div class="glass-filter"></div>
+          <div class="glass-overlay"></div>
+          <div class="glass-specular"></div>
+          
+          <!-- Upload View -->
+          <div class="glass-content glass-content--inline" id="uploadView">
+            <h2 class="upload-title">Upload Image</h2>
+            <p class="upload-subtitle">
+              Select and upload the image of your choice
+            </p>
+            <div class="upload-area" id="uploadArea">
+              <div class="upload-icon">📄</div>
+              <div class="upload-text">
+                Drop your file(s) here or <span>browse</span><br />
+                <small>Max. file size 9999 MB</small>
+              </div>
+              <input
+                type="file"
+                id="fileInput"
+                class="upload-input"
+                accept="image/*"
+              />
+            </div>
+
+            <button class="remove-bg-btn" id="removeBgBtn" disabled>
+              Remove Background
+            </button>
+          </div>
+
+          <!-- Coffee View -->
+          <div class="glass-content" id="coffeeView" style="display: none;">
+            <div class="qr-container">
+              <h2 class="qr-title">Support Me ❤️</h2>
+              <p class="qr-subtitle">Scan this QR code to buy me a coffee ☕</p>
+              <div class="qr-code">
+                <!-- Replace with your actual Google Pay QR code image -->
+                <img src="IMG_20250823_212016.png" alt="Google Pay QR Code">
+              </div>
+              <button class="back-btn" id="backBtn">Back to Upload</button>
+            </div>
+          </div>
+
+          <!-- Loading View -->
+          <div class="glass-content loading-container" id="loadingView">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Removing background...</div>
+          </div>
+
+          <!-- Result View -->
+          <div class="glass-content result-container" id="resultView">
+            <h2 class="result-title">Background Removed</h2>
+            <img id="resultImage" class="result-image" alt="Result image" />
+            <div class="btn-container">
+              <button class="action-btn" id="downloadBtn">
+                Download Image
+              </button>
+              <button class="action-btn" id="cancelBtn">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SVG FILTER DEFINITION -->
+    <svg style="display: none">
+      <filter id="lg-dist" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.008 0.008"
+          numOctaves="2"
+          seed="92"
+          result="noise"
+        />
+        <feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="blurred"
+          scale="70"
+          xChannelSelector="R"
+          yChannelSelector="G"
+        />
+      </filter>
+    </svg>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const uploadArea = document.getElementById("uploadArea");
+        const fileInput = document.getElementById("fileInput");
+        const removeBgBtn = document.getElementById("removeBgBtn");
+        const glassContainer = document.getElementById("glassContainer");
+        const uploadView = document.getElementById("uploadView");
+        const coffeeView = document.getElementById("coffeeView");
+        const loadingView = document.getElementById("loadingView");
+        const resultView = document.getElementById("resultView");
+        const resultImage = document.getElementById("resultImage");
+        const downloadBtn = document.getElementById("downloadBtn");
+        const cancelBtn = document.getElementById("cancelBtn");
+        const coffeeBtn = document.getElementById("coffeeBtn");
+        const backBtn = document.getElementById("backBtn");
+
+        let currentFile = null;
+        let processedImageUrl = null;
+        let apiBaseUrl = "http://localhost:8000";
+
+        removeBgBtn.disabled = true;
+
+        // Coffee button functionality
+        coffeeBtn.addEventListener("click", () => {
+          uploadView.style.display = "none";
+          coffeeView.style.display = "flex";
+          glassContainer.classList.add("expanded");
+        });
+
+        // Back button functionality
+        backBtn.addEventListener("click", () => {
+          coffeeView.style.display = "none";
+          uploadView.style.display = "flex";
+          if (!currentFile) {
+            glassContainer.classList.remove("expanded");
+          }
+        });
+
+        // Highlight drop area when item is dragged over it
+        uploadArea.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          uploadArea.classList.add("active");
+        });
+
+        uploadArea.addEventListener("dragleave", () => {
+          uploadArea.classList.remove("active");
+        });
+
+        uploadArea.addEventListener("drop", (e) => {
+          e.preventDefault();
+          uploadArea.classList.remove("active");
+
+          if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            handleFileUpload(e.dataTransfer.files[0]);
+          }
+        });
+
+        // Handle file selection
+        fileInput.addEventListener("change", () => {
+          if (fileInput.files.length) {
+            handleFileUpload(fileInput.files[0]);
+          }
+        });
+
+        // Handle remove background button click
+        removeBgBtn.addEventListener("click", async () => {
+          if (!currentFile) return;
+
+          // Show loading view
+          uploadView.style.display = "none";
+          coffeeView.style.display = "none";
+          loadingView.style.display = "flex";
+          glassContainer.classList.add("result-view");
+
+          try {
+            // Prepare form data
+            const formData = new FormData();
+            formData.append("file", currentFile);
+
+            fetch("http://localhost:8000/remove-bg/?return_format=png", {
+              method: "POST",
+              body: formData,
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.image) {
+                  processedImageUrl = `data:image/png;base64,${data.image}`;
+                  loadingView.style.display = "none";
+                  resultView.style.display = "flex";
+                  resultImage.src = processedImageUrl;
+                  downloadBtn.style.display = "inline-block";
+                }
+              })
+              .catch((err) => {
+                alert("Failed to remove background: " + err.message);
+              });
+          } catch (error) {
+            alert(`Failed to remove background: ${error.message}`);
+            resetToUploadView();
+          }
+        });
+
+        // Handle download button click
+        downloadBtn.addEventListener("click", () => {
+          if (!processedImageUrl) return;
+
+          // Convert base64 string to Blob
+          const byteString = atob(processedImageUrl.split(",")[1]);
+          const ab = new ArrayBuffer(byteString.length);
+          const ia = new Uint8Array(ab);
+          for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+          }
+
+          const blob = new Blob([ab], { type: "image/png" });
+          const url = URL.createObjectURL(blob);
+
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "background_removed.png";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+
+          URL.revokeObjectURL(url);
+        });
+
+        // Handle cancel button click
+        cancelBtn.addEventListener("click", resetToUploadView);
+
+        function handleFileUpload(file) {
+          // Check file size (limit to 10MB)
+          if (file.size > 10 * 1024 * 1024) {
+            alert(
+              "File size too large. Please upload an image smaller than 10MB."
+            );
+            return;
+          }
+
+          currentFile = file;
+
+          // Expand the glass container
+          glassContainer.classList.add("expanded");
+
+          removeBgBtn.disabled = false;
+
+          // Show a preview of the image
+          if (file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              uploadArea.innerHTML = `
+                    <div class="image-preview-container">
+                        <img src="${e.target.result}" class="image-preview">
+                        <div class="filename">${file.name}</div>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(file);
+          } else {
+            // Reset if not an image
+            resetUploadArea();
+            alert("Please upload a valid image file.");
+          }
+        }
+
+        function resetUploadArea() {
+          currentFile = null;
+
+          // Collapse the glass container
+          glassContainer.classList.remove("expanded");
+          glassContainer.classList.remove("result-view");
+
+          // Reset upload area to initial state
+          uploadArea.innerHTML = `
+            <div class="upload-icon">↑</div>
+            <div class="upload-text">Drag & drop your image here or click to browse</div>
+            <input type="file" id="fileInput" class="upload-input" accept="image/*">
+        `;
+
+          // Reattach event listeners to the new input
+          const newInput = uploadArea.querySelector(".upload-input");
+          newInput.addEventListener("change", () => {
+            if (newInput.files.length) {
+              handleFileUpload(newInput.files[0]);
+            }
+          });
+        }
+
+        function resetToUploadView() {
+          // Clean up processed image URL if it exists
+          if (processedImageUrl) {
+            URL.revokeObjectURL(processedImageUrl);
+            processedImageUrl = null;
+          }
+
+          // Reset views
+          loadingView.style.display = "none";
+          resultView.style.display = "none";
+          coffeeView.style.display = "none";
+          uploadView.style.display = "flex";
+
+          // Reset to upload state
+          resetUploadArea();
+        }
+
+        // Run API connection test after a short delay
+        setTimeout(testApiConnection, 1000);
+      });
+    </script>
+  </body>
+</html>
